@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Categorize Description</title>
+    <link href="{{url_for('static', filename="bootstrap.min.css")}}" rel="stylesheet" />
+    <script src="{{url_for('static', filename="bootstrap.bundle.min.js")}}"></script>
+
+    <style>
+      a {
+        color: cornflowerblue;
+        font-weight: bold;
+        background-color: #334373;
+        text-decoration: none;
+        padding: 0.1rem 0.4rem;
+        border-radius: 0.3rem;
+      }
+      a:hover {
+        color: #fefefe;
+      }
+      #category-result {
+        background-color: #1b1f22;
+        transition:
+          border-color 0.5s ease-out,
+          opacity 0.5s ease-out;
+        border: 2px solid transparent;
+        opacity: 1;
+      }
+      .highlight-blue {
+        border-color: var(--bs-primary) !important;
+        opacity: 1 !important;
+      }
+      .highlight-green {
+        border-color: green !important;
+        opacity: 1 !important;
+      }
+      #copy-button {
+        border-radius: 0px !important;
+      }
+    </style>
+  </head>
+  <body class="bg-dark">
+    <header class="bg-dark d-flex flex-column align-middle">
+      <p class="py-1 lead text-center text-white fw-semibold">Categorize Description</p>
+
+      <nav class="d-flex justify-content-center gap-2">
+        <a class="text-center" href="/url">URL Webscraper</a>
+        <a class="text-center" href="/description"
+          >Categorize Description</a
+        >
+      </nav>
+    </header>
+
+    <main class="py-2">
+      <section id="interaction" class="container">
+        <form>
+          <label for="company-description" class="text-white h5"
+            >Categorize Company Description</label
+          >
+          <textarea
+            id="company-description"
+            class="form-control my-2"
+            style="height: 10rem"
+            type="text"
+            placeholder="Enter the company description"
+          ></textarea>
+          <button id="categorize-button" type="button" class="btn btn-primary">
+            Categorize
+          </button>
+        </form>
+
+        <section id="company-category" class="text-white mt-4">
+          <h5>Categories</h5>
+          <div id="category-result" class="d-flex">
+            <span
+              class="d-flex align-items-center"
+              id="category-result-append"
+            ></span>
+            <button id="copy-button" class="btn btn-primary ms-auto">
+              Copy
+            </button>
+          </div>
+        </section>
+      </section>
+    </main>
+  </body>
+
+  <script>
+    // Click 'Enter' button to click button
+    document.getElementById("company-description").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        document.getElementById("categorize-button").click();
+      }
+    })
+  
+    const interactionSection = document.getElementById("interaction");
+
+    interactionSection.addEventListener("click", async (e) => {
+      const destContainer = document.getElementById("category-result");
+      const copyButton = document.getElementById("copy-button");
+
+      if (e.target.id === "copy-button") {
+        const copyText = document.getElementById("category-text");
+        if (copyText) {
+          navigator.clipboard.writeText(copyText.textContent);
+          copyButton.innerHTML = "Copied";
+
+          destContainer.classList.add("highlight-blue");
+          setTimeout(() => {
+            destContainer.classList.remove("highlight-blue");
+          }, 500);
+        }
+      } else if (e.target.id === "categorize-button") {
+        const userInput = document
+          .getElementById("company-description")
+          .value.trim();
+
+        if (userInput === "") {
+          return;
+        }
+
+        const categorizeButton = document.getElementById("categorize-button");
+        const destSpan = document.getElementById("category-result-append");
+        const categoryText = document.createElement("span");
+        categoryText.id = "category-text";
+        categoryText.className = "text-secondary px-2";
+        categoryText.appendChild(document.createTextNode("Loading..."));
+        destSpan.replaceChildren(categoryText);
+
+        categorizeButton.disabled = true;
+        copyButton.disabled = true;
+
+        let categories = "Error";
+        try {
+          const test = await fetch("http://localhost:3000/categorize", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ description: userInput }),
+          });
+          const response = await test.json();
+          categories = response.categories;
+        } catch (e) {
+          console.error(e);
+        }
+        categorizeButton.disabled = false;
+        copyButton.disabled = false;
+        copyButton.innerHTML = "Copy";
+
+        categoryText.replaceChildren(document.createTextNode(categories));
+        categoryText.className = "px-2";
+        destSpan.replaceChildren(categoryText);
+
+        destContainer.classList.add("highlight-green");
+        setTimeout(() => {
+          destContainer.classList.remove("highlight-green");
+        }, 1500);
+      }
+    });
+  </script>
+</html>

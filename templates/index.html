@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Categorize</title>
+    <link href="{{url_for('static', filename="bootstrap.min.css")}}" rel="stylesheet" />
+    <script src="{{url_for('static', filename="bootstrap.bundle.min.js")}}"></script>
+    <style>
+      a {
+        color: cornflowerblue;
+        font-weight: bold;
+        background-color: #334373;
+        text-decoration: none;
+        padding: 0.1rem 0.4rem;
+        border-radius: 0.3rem;
+      }
+      a:hover {
+        color: #fefefe;
+      }
+    </style>
+  </head>
+  <body class="bg-dark">
+    <header class="bg-dark d-flex flex-column align-middle">
+      <p class="py-1 lead text-center text-white fw-semibold">URL Webscraper</p>
+
+      <nav class="d-flex justify-content-center gap-2">
+        <a class="text-center" href="/url">URL Webscraper</a>
+        <a class="text-center" href="/description"
+          >Categorize Description</a
+        >
+      </nav>
+    </header>
+
+    <main>
+    </main>
+  </body>
+
+</html>
