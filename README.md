@@ -15,4 +15,5 @@
 - Copy the repository and extract
 - Open the project folder and open in terminal
 - Run `python3 -m pip install requirements.txt` or `python -m pip install requirements.txt`
+- Run `python3 server.py`
 - Open your browser at http://localhost:3000
